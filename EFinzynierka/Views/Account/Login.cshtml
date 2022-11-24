@@ -1,0 +1,28 @@
+﻿@model EFinzynierka.Models.Login
+
+<h2> Login</h2>
+
+@using (Html.BeginForm("Login", "Account", FormMethod.Post))
+{
+    @Html.ValidationSummary();
+
+        <form>
+            <div class="form-group">
+            <label for="exampleInputEmail1">Nazwa uzytkownika</label>
+            <input type="UserName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @Html.TextBoxFor(x=> x.UserName)>
+            
+        </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" @Html.TextBoxFor(x=> x.Email)>
+
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" @Html.PasswordFor(x=> x.Password)>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+}

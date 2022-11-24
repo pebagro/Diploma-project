@@ -15,10 +15,7 @@ namespace EFinzynierka.Models
         public string Surname { get; set; }
         [Required]
         public string Contract { get; set; }
-
         public string? Telephone { get; set; }
-
-        
         
     }
 }
