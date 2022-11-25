@@ -38,8 +38,8 @@
                             </a>
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" asp-area="" asp-controller="account" asp-action="register">Dodaj Uzytkownika</a>
-                                <a class="dropdown-item" href="#">Edytuj użytkownika</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Create">Dodaj Uzytkownika</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Details">Edytuj użytkownika</a>
                                 <a class="dropdown-item" href="#">Inne pomysły</a>
                             </div>
                         </li>
@@ -64,6 +64,9 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Zaloguj sie</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Utworz konto</a>
                         </li>
                     }
 

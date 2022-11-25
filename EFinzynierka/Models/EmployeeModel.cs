@@ -5,7 +5,7 @@ namespace EFinzynierka.Models
     public class EmployeeModel
     {
         [Key]
-        public int Id { get; set; }
+        public int id { get; set; }
         public int EmployeeId { get; set; }
         public DateTime CreatedDate { get; set; }
 
