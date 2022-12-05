@@ -1,6 +1,7 @@
 ﻿using EFinzynierka.Models;
+using EFinzynierka.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Differencing;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
 
@@ -8,183 +9,84 @@ namespace EFinzynierka.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly DbEFinzynierkaContext _context;
+        private readonly IEmployeeservices _Employeeservices;
 
-        public EmployeeController(DbEFinzynierkaContext context)
+        public EmployeeController(IEmployeeservices Employeeservices)
         {
-
-            _context = context;
+            _Employeeservices = Employeeservices;
         }
 
-        public async Task<IActionResult> Index(
-            int? pageNumber,
-            string currentFilter,
-            string searchString
-        )
+      
+        public IActionResult Index()
         {
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-            ViewData["CurrentFilter"] = searchString;
-
-            var employees = from e in _context.Employees select e;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                employees = employees.Where(s => s.Surname.Contains(searchString)
-                                       || s.Name.Contains(searchString));
-            }
-            int pageSize = 3;
-
-            return View(await PaginatedList<EmployeeModel>.CreateAsync(employees, pageNumber ?? 1, pageSize));
-
+            var employeeList = _Employeeservices.GetAll();
+            return View(employeeList);
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-
-            }
-            var employee = await _context.Employees.Include(e => e.EmployeeId).FirstOrDefaultAsync(m => m.id == id);
-
-
-            if (employee == null)
-            {
-                return NotFound();
-
-            }
-            return View(employee);
-        }
-
-        //Get Employee/Create
-        [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View();  
         }
 
         //Post Employee/Create
-        public async Task<IActionResult> Create(
-            [Bind("Name,Surname,Telephone")] EmployeeController employee)
+        [HttpPost,ActionName("Create")]
+        public IActionResult Create(
+                     [Bind("Surname,Name,Telephone,Contract")] EmployeeModel employee)
         {
-            try
+
+            ModelState.Remove("vSchedulerModel");
+            ModelState.Remove("Discriminator");
+            ModelState.Remove("Fullname");
+            if (!ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(employee);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
+
+                return View(employee);
             }
-            catch (DbUpdateException)
-            {
-                ModelState.AddModelError("", "Błąd zapisu. " + "Spróbuj ponownie. ");
-            }
-            return View();
+
+            _Employeeservices.Add(employee);
+
+            return RedirectToAction("Index");
+
         }
 
-        /*Get Employee edit*/
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Delete(int id)
+        {
+            if (id == null) 
+            {
+                return (NotFound());
+            }
+
+            _Employeeservices.Delete(id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
             if (id == null)
             {
                 return (NotFound());
             }
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return (NotFound());
-            }
-            
+            var employee = _Employeeservices.Get(id);
+
+
             return View(employee);
         }
 
-        [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+
+        [HttpPost]
+        public IActionResult Edit(EmployeeModel employee)
         {
-            if (id == null)
-            {
-                return (NotFound());
 
-            }
-            var employeeToUpdate = await _context.Employees.FirstOrDefaultAsync(m => m.id == id);
-            if (await TryUpdateModelAsync<EmployeeModel>(
-                employeeToUpdate,
-                "",
-                s => s.Name, s => s.Surname, s => s.Telephone))
-            {
-                try
-                {
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException)
-                {
-
-                    ModelState.AddModelError("", "Błąd zapisu. " + "Spróbuj ponownie. ");
-                }
-            }
-            return View(employeeToUpdate);
-        }
-
-        /* Get: Employee/Delete */
-        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
-        {
-            if (id == null)
+            if ( employee== null)
             {
                 return (NotFound());
             }
 
-            var employee = await _context.Employees.FirstOrDefaultAsync(m => m.id == id);
+            _Employeeservices.Edit(employee);
 
-            if (employee == null)
-            {
-                return (NotFound());
-            }
-
-            if (saveChangesError.GetValueOrDefault())
-            {
-                ViewData["ErrorMessage"] = "Nie udało usunąć się pracownika, spróbuj ponownie. ";
-            }
-            return View(employee);
+            return RedirectToAction("Index");
         }
-        /* POST: Employee/Delete */
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> DeleteConfirmation(int id)
-        {
-            var employee = await _context.Employees.FindAsync(id);
-
-            if (employee == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            try
-            {
-                _context.Employees.Remove(employee);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-
-            }
-
-            catch (DbUpdateException)
-            {
-                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
-
-            }
-        }
-        private bool EmployeeExist(int id)
-        {
-            return _context.Employees.Any(e => e.id == id);
-        }
     }
 }

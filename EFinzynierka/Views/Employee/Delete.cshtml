@@ -1,5 +1,4 @@
-﻿@model PaginatedList<EFinzynierka.Models.EmployeeModel>
-@*@model EFinzynierka.Models.EmployeeModel*@
+﻿@model EFinzynierka.Models.EmployeeModel
 
 @{
     ViewData["Delete"] = "Delete";
@@ -12,24 +11,25 @@
     <h4>Student</h4>
     <hr />
     <dl class="row">
-        @foreach (var item in Model){
+
                 
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(Model =>item.Name)
+            @Model.Name
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => item.Name)
+            @Model.Surname
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => item.Telephone)
+            @Model.Contract
         </dt>
-                }
+        } 
 
     </dl>
 
     <form asp-action="Delete">
-@*        <input type="hidden" asp-for="id" />*@
+        <input type="hidden" asp-for="@Model.IdEmployee"/>
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
+
 </div>

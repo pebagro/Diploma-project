@@ -1,5 +1,7 @@
 using EFinzynierka;
 using EFinzynierka.Models;
+using EFinzynierka.Services;
+using EFinzynierka.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +11,14 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
+        builder.Services.AddScoped<IEmployeeservices, Employeeservices>();
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication();
 
         builder.Services.AddDbContext<DbEFinzynierkaContext>(builder =>
         {
 
-            builder.UseSqlServer("Data Source=localhost;Initial Catalog=DbEFinzynierka;Integrated Security=True;Encrypt=false;TrustServerCertificate=true");
+            builder.UseSqlServer(@"Data Source=DESKTOP-BFG7ULK\MSSQLSERVER01;Initial Catalog=DbEFinzynierka;Integrated Security=True;Encrypt=false;TrustServerCertificate=true");
         });
         builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
         {
@@ -24,7 +27,7 @@ internal class Program
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.Password.RequiredLength = 5;
-            
+
         }).AddEntityFrameworkStores<DbEFinzynierkaContext>();
 
         var app = builder.Build();
@@ -36,11 +39,11 @@ internal class Program
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
-
+        app.UseStaticFiles();
 
         app.UseHttpsRedirection();
-
-        app.UseStaticFiles();
+        
+        
 
         app.UseRouting();
         app.UseAuthentication();
@@ -49,7 +52,8 @@ internal class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
-
+        
         app.Run();
+        
     }
 }
