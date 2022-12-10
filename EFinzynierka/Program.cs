@@ -12,6 +12,7 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
         builder.Services.AddScoped<IEmployeeservices, Employeeservices>();
+        builder.Services.AddTransient<ISchedulerservices, Schedulerservices>();
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication();
 

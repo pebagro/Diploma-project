@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFinzynierka.Migrations
 {
     [DbContext(typeof(DbEFinzynierkaContext))]
-    [Migration("20221205185348_init")]
-    partial class init
+    [Migration("20221206001048_AddUser")]
+    partial class AddUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,12 +36,6 @@ namespace EFinzynierka.Migrations
                     b.Property<string>("Contract")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdScheduler")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MonthlyModelIdEmployee")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -55,14 +49,26 @@ namespace EFinzynierka.Migrations
 
                     b.HasKey("IdEmployee");
 
-                    b.HasIndex("IdScheduler")
-                        .IsUnique();
-
-                    b.HasIndex("MonthlyModelIdEmployee");
-
                     b.ToTable("Employee", (string)null);
+                });
 
-                    b.UseTptMappingStrategy();
+            modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>
+                {
+                    b.Property<int>("IdScheduler")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdScheduler"));
+
+                    b.Property<int>("DaysInMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdScheduler");
+
+                    b.ToTable("Scheduler", (string)null);
                 });
 
             modelBuilder.Entity("EFinzynierka.Models.UserModel", b =>
@@ -263,51 +269,42 @@ namespace EFinzynierka.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>
-                {
-                    b.HasBaseType("EFinzynierka.Models.EmployeeModel");
-
-                    b.Property<int>("DaysInMonth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.ToTable("Scheduler", (string)null);
-                });
-
             modelBuilder.Entity("MonthlyModel", b =>
                 {
-                    b.HasBaseType("EFinzynierka.Models.SchedulerModel");
-
-                    b.Property<int?>("SchedulerModelIdEmployee")
-                        .HasColumnType("int");
-
                     b.Property<int>("TypeId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.HasIndex("SchedulerModelIdEmployee");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"));
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DayInMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeModelIdEmployee")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HoursScheduled")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MonthlyModelTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShiftType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TypeId");
+
+                    b.HasIndex("EmployeeModelIdEmployee");
+
+                    b.HasIndex("MonthlyModelTypeId");
 
                     b.ToTable("MonthlyModel", (string)null);
-                });
-
-            modelBuilder.Entity("EFinzynierka.Models.EmployeeModel", b =>
-                {
-                    b.HasOne("EFinzynierka.Models.SchedulerModel", "SchedulerModels")
-                        .WithOne("EmployeeModel")
-                        .HasForeignKey("EFinzynierka.Models.EmployeeModel", "IdScheduler")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MonthlyModel", "MonthlyModel")
-                        .WithMany()
-                        .HasForeignKey("MonthlyModelIdEmployee")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MonthlyModel");
-
-                    b.Navigation("SchedulerModels");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -361,33 +358,25 @@ namespace EFinzynierka.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>
+            modelBuilder.Entity("MonthlyModel", b =>
                 {
                     b.HasOne("EFinzynierka.Models.EmployeeModel", null)
-                        .WithOne()
-                        .HasForeignKey("EFinzynierka.Models.SchedulerModel", "IdEmployee")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Monthly")
+                        .HasForeignKey("EmployeeModelIdEmployee");
+
+                    b.HasOne("MonthlyModel", null)
+                        .WithMany("Items")
+                        .HasForeignKey("MonthlyModelTypeId");
+                });
+
+            modelBuilder.Entity("EFinzynierka.Models.EmployeeModel", b =>
+                {
+                    b.Navigation("Monthly");
                 });
 
             modelBuilder.Entity("MonthlyModel", b =>
                 {
-                    b.HasOne("EFinzynierka.Models.SchedulerModel", null)
-                        .WithOne()
-                        .HasForeignKey("MonthlyModel", "IdEmployee")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EFinzynierka.Models.SchedulerModel", "SchedulerModel")
-                        .WithMany()
-                        .HasForeignKey("SchedulerModelIdEmployee");
-
-                    b.Navigation("SchedulerModel");
-                });
-
-            modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>
-                {
-                    b.Navigation("EmployeeModel");
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EFinzynierka.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class AddUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,36 @@ namespace EFinzynierka.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employee",
+                columns: table => new
+                {
+                    IdEmployee = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Contract = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Telephone = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employee", x => x.IdEmployee);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Scheduler",
+                columns: table => new
+                {
+                    IdScheduler = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DaysInMonth = table.Column<int>(type: "int", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Scheduler", x => x.IdScheduler);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,64 +187,32 @@ namespace EFinzynierka.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employee",
-                columns: table => new
-                {
-                    IdEmployee = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdScheduler = table.Column<int>(type: "int", nullable: false),
-                    MonthlyModelIdEmployee = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Contract = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Telephone = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employee", x => x.IdEmployee);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Scheduler",
-                columns: table => new
-                {
-                    IdEmployee = table.Column<int>(type: "int", nullable: false),
-                    DaysInMonth = table.Column<int>(type: "int", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Scheduler", x => x.IdEmployee);
-                    table.ForeignKey(
-                        name: "FK_Scheduler_Employee_IdEmployee",
-                        column: x => x.IdEmployee,
-                        principalTable: "Employee",
-                        principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MonthlyModel",
                 columns: table => new
                 {
-                    IdEmployee = table.Column<int>(type: "int", nullable: false),
-                    TypeId = table.Column<int>(type: "int", nullable: false),
-                    SchedulerModelIdEmployee = table.Column<int>(type: "int", nullable: true)
+                    TypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Day = table.Column<int>(type: "int", nullable: false),
+                    HoursScheduled = table.Column<int>(type: "int", nullable: false),
+                    ShiftType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    DayInMonth = table.Column<int>(type: "int", nullable: false),
+                    EmployeeModelIdEmployee = table.Column<int>(type: "int", nullable: true),
+                    MonthlyModelTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MonthlyModel", x => x.IdEmployee);
+                    table.PrimaryKey("PK_MonthlyModel", x => x.TypeId);
                     table.ForeignKey(
-                        name: "FK_MonthlyModel_Scheduler_IdEmployee",
-                        column: x => x.IdEmployee,
-                        principalTable: "Scheduler",
-                        principalColumn: "IdEmployee",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MonthlyModel_Scheduler_SchedulerModelIdEmployee",
-                        column: x => x.SchedulerModelIdEmployee,
-                        principalTable: "Scheduler",
+                        name: "FK_MonthlyModel_Employee_EmployeeModelIdEmployee",
+                        column: x => x.EmployeeModelIdEmployee,
+                        principalTable: "Employee",
                         principalColumn: "IdEmployee");
+                    table.ForeignKey(
+                        name: "FK_MonthlyModel_MonthlyModel_MonthlyModelTypeId",
+                        column: x => x.MonthlyModelTypeId,
+                        principalTable: "MonthlyModel",
+                        principalColumn: "TypeId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -257,50 +255,19 @@ namespace EFinzynierka.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employee_IdScheduler",
-                table: "Employee",
-                column: "IdScheduler",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employee_MonthlyModelIdEmployee",
-                table: "Employee",
-                column: "MonthlyModelIdEmployee");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MonthlyModel_SchedulerModelIdEmployee",
+                name: "IX_MonthlyModel_EmployeeModelIdEmployee",
                 table: "MonthlyModel",
-                column: "SchedulerModelIdEmployee");
+                column: "EmployeeModelIdEmployee");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employee_MonthlyModel_MonthlyModelIdEmployee",
-                table: "Employee",
-                column: "MonthlyModelIdEmployee",
-                principalTable: "MonthlyModel",
-                principalColumn: "IdEmployee",
-                onDelete: ReferentialAction.NoAction);
-                //onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employee_Scheduler_IdScheduler",
-                table: "Employee",
-                column: "IdScheduler",
-                principalTable: "Scheduler",
-                principalColumn: "IdEmployee",
-                onDelete: ReferentialAction.NoAction);
+            migrationBuilder.CreateIndex(
+                name: "IX_MonthlyModel_MonthlyModelTypeId",
+                table: "MonthlyModel",
+                column: "MonthlyModelTypeId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Employee_MonthlyModel_MonthlyModelIdEmployee",
-                table: "Employee");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Employee_Scheduler_IdScheduler",
-                table: "Employee");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -317,16 +284,16 @@ namespace EFinzynierka.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "MonthlyModel");
 
             migrationBuilder.DropTable(
                 name: "Scheduler");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Employee");

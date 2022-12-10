@@ -53,7 +53,9 @@
                    <a asp-action="Edit" asp-route-id="@item.IdEmployee">Edit</a> |
                 
                     <a asp-action="Delete" asp-route-id="@item.IdEmployee">Delete</a> |
-                    <a asp-action="EditScheduler" asp-route-id="@item.IdEmployee">Edytuj grafik</a>
+                    <a asp-action="GetPartial" asp-controller="Monthly" asp-route-id="@item.IdEmployee">Edytuj grafik</a>
+
+                    <a asp-action="GetPartial" asp-controller="Monthly" asp-route-id="@item.IdEmployee">Pokaz grafik</a>
 
                   
                     

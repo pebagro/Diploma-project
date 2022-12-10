@@ -1,9 +1,6 @@
 ﻿using EFinzynierka.Models;
 using EFinzynierka.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
 
 namespace EFinzynierka.Controllers
 {
