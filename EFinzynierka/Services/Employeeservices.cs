@@ -50,34 +50,9 @@ namespace EFinzynierka.Services
 
         public EmployeeModel Get(int id)
         {
-            var cokolwiek = _context.Employees.Find(id);
-            return cokolwiek;
+            var users = _context.Employees.Find(id);
+            return users;
         }
-
-        public void Others(int id)
-        {
-            var employees = _context.Employees.Find(id);
-            //_context.Entry(employees).Collection(p => p.MonthlyModels).Load();
-        }
-
-        public void Otherss(int id)
-        {
-            var scheduler = _context.Employees.Find(id);
-            
-         //   _context.Employees.Include(p => p.MonthlyModels).Where(p => p.Id == id).FirstOrDefault();
-        }
-
-        public SchedulerModel Gets(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public SchedulerModel tester(int id, int int_month)
-        {
-            throw new NotImplementedException();
-        }
-
-       
 
         public double GetScheduledHours(int id, int month, int year)
         {
@@ -85,4 +60,3 @@ namespace EFinzynierka.Services
         }
     }
 }
-

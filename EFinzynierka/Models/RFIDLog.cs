@@ -9,7 +9,6 @@ namespace EFinzynierka.Models
         public string RFIDCardID { get; set; }
         public DateTime Timestamp { get; set; }
         public bool IsEntry { get; set; }
-
         public int EmployeeID { get; set; }
         public virtual EmployeeModel Employee { get; set; }
     }

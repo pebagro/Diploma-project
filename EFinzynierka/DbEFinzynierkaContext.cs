@@ -16,8 +16,7 @@ namespace EFinzynierka
 
         // Tworzymy tabele po modelu Employee - automat
         public DbSet<EmployeeModel> Employees { get; set; }
-        public DbSet<SchedulerModel> Scheduler { get; set; }
-        public DbSet<MonthlyModel> MonthlyModel { get; set; }
+
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<RFIDLog> RFIDLogs { get; set; }
 
@@ -25,11 +24,7 @@ namespace EFinzynierka
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<MonthlyModel>().ToTable("MonthlyModel");
-
             builder.Entity<EmployeeModel>().ToTable("Employee");
-
-            builder.Entity<SchedulerModel>().ToTable("Scheduler");
 
             builder.Entity<Shift>().ToTable("Shift");
 

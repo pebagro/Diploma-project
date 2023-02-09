@@ -24,7 +24,6 @@ internal class Program
         builder.Services.AddSingleton(configuration.GetValue<string>("RFIDReader:PortName"));
         builder.Services.AddScoped<IEmployeeservices, Employeeservices>();
         builder.Services.AddScoped<IEmployeeDataService, EmployeeDataService>();
-        builder.Services.AddTransient<ISchedulerservices, Schedulerservices>();
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication();
         builder.Services.AddMvc();

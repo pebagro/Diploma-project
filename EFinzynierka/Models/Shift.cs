@@ -9,7 +9,7 @@ public class Shift
     [StartTimeNotLaterThanEndTime]
     public DateTime StartTime { get; set; }
 
-    [Range(typeof(TimeSpan), "00:00:00", "12:00:00", ErrorMessage = "The maximum shift time is 12 hours.")]
+    [Range(typeof(TimeSpan), "00:00:00", "12:00:00", ErrorMessage = "Zaplanowana zmiana może trwać maksymalnie 12h.")]
     public DateTime EndTime { get; set; }
 
     [ForeignKey("EmployeeId")]

@@ -90,9 +90,9 @@ namespace EFinzynierka.Services
                 string data = _serialPort.ReadLine();
                 _logger.LogInformation($"Received data from RFID reader: {data}");
 
-                
+
                 // Parse the data to extract the RFID card ID
-    int prefixLength = "RFID Tag UID: ".Length;
+                int prefixLength = "RFID Tag UID: ".Length;
                 string cardId = data.Substring(prefixLength).Trim();
                 cardId = cardId.Replace(" ", "");
                 // Zapisz odczyt karty do bazy danych
@@ -122,4 +122,3 @@ namespace EFinzynierka.Services
         }
     }
 }
-    

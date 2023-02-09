@@ -23,7 +23,6 @@ namespace EFinzynierka.Models
         public DateTime DateOfBirth { get; set; }
         public DateTime StartDate { get; set; }
 
-        public virtual ICollection<SchedulerModel>? Schedules { get; set; } 
     }
 
 }
