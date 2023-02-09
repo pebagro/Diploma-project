@@ -1,0 +1,12 @@
+﻿@model Shift
+
+<h2>Usuwanie zmiany</h2>
+<hr />
+<form method="post" action="/Employee/DeleteShifts">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div>
+        <p>Napewno chcesz usunąć zmianę dnia @Model.StartTime?</p>
+        <input type="submit" value="Usuń" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-default">Przerwij</a>
+    </div>
+</form>

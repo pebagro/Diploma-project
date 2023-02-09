@@ -1,0 +1,28 @@
+﻿@model List<EmployeeModel>
+
+<form method="post" asp-action="ShowRFIDLogs">
+    <div class="form-group">
+        <label for="employeeSelect">Wybierz pracownika:</label>
+        <select id="employeeSelect" name="employeeId" class="form-control">
+            @foreach (var employee in Model)
+            {
+                <option value="@employee.Id">@employee.Name @employee.Surname</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Wyświetl logi RFID" class="btn btn-primary">
+    </div>
+</form>
+
+
+@*<form asp-action="ShowRFIDLogs">
+    <label for="employeeSelect">Wybierz pracownika:</label>
+    <select id="employeeSelect" name="employeeId">
+        @foreach (var employee in Model)
+        {
+                <option value="@employee.Id">@employee.Name @employee.Surname</option>
+        }
+    </select>
+    <input type="submit" value="Wyświetl logi RFID">
+</form>*@

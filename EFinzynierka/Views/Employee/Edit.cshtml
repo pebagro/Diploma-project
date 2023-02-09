@@ -3,46 +3,65 @@
     ViewData["Edit"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Student</h4>
+<b>Edycja pracownika</b>
+<h1> @Model.Name @Model.Surname</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdEmployee" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Imię</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Surname" class="control-label"></label>
+                <label asp-for="Surname" class="control-label">Nazwisko</label>
                 <input asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Telephone" class="control-label"></label>
+                <label asp-for="Telephone" class="control-label">Telefon</label>
                 <input asp-for="Telephone" class="form-control" />
                 <span asp-validation-for="Telephone" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Contract" class="control-label"></label>
-                <input asp-for="Contract" class="form-control" />
+                <label asp-for="StartDate">Data rozpoczęcia pracy</label>
+                <input asp-for="StartDate" type="date" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Contract" class="control-label">Rodzaj umowy</label>
+                <select asp-for="Contract" class="form-control selectpicker">
+                    <option value="B2B">B2B</option>
+                    <option value="UoP">UoP</option>
+                    <option value="Zlecenie">Zlecenie</option>
+                    <option value="Inne">Inne</option>
+                </select>
                 <span asp-validation-for="Contract" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" asp-action="Edit" class="btn btn-primary" />
+                <label asp-for="CardInfo" class="control-label">Nr karty RFID</label>
+                <input asp-for="CardInfo" class="form-control" />
+                <span asp-validation-for="CardInfo" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Zapisz " asp-action="Edit" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <hr />
+    <div class="form-group">
+        <input type="submit" value="Powrót" asp-action="Index" class="btn btn-primary" />
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

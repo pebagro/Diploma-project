@@ -1,65 +1,46 @@
-﻿@model List<EFinzynierka.Models.EmployeeModel>
+﻿@model IEnumerable<EmployeeModel>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h2>Index</h2>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
-<form asp-action="Index" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" /> |
-            <a asp-action="Index">Back to Full List</a>
-        </p>
-    </div>
-</form>
-
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Last Name</a>
-            </th>
-            <th>
-                First Name
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Enrollment Date</a>
-            </th>
-            <th></th>
+            <th>Akcje</th>
+            <th>Pracownik</th>
+            <th>Najbliższe zmiany</th>
+            <th>Dodaj zmiany</th>
+
         </tr>
     </thead>
     <tbody>
-        @foreach(var item in Model)
+        @foreach (var employee in Model)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Surname)
+                    <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-primary">Edytuj</a>
+                    <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz usunąć użytkownika?');">Usuń</a>
                 </td>
+                <td>@employee.Name @employee.Surname</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Telephone)
-                </td>
-        
-                <td>
-                   <a asp-action="Edit" asp-route-id="@item.IdEmployee">Edit</a> |
-                
-                    <a asp-action="Delete" asp-route-id="@item.IdEmployee">Delete</a> |
-                    <a asp-action="GetPartial" asp-controller="Monthly" asp-route-id="@item.IdEmployee">Edytuj grafik</a>
+                    <table class="table table-striped">
+                        @foreach (var shift in employee.Shifts)
+                        {
+                            <tr>
+                                <td class="table-left-align"> @shift.StartTime.ToString("dd/MM")</td>
+                                <td class="table-left-align"> @shift.StartTime.ToString("HH:mm")</td>
+                                <td>-</td>
 
-                    <a asp-action="GetPartial" asp-controller="Monthly" asp-route-id="@item.IdEmployee">Pokaz grafik</a>
-
-                  
-                    
+                                <td class="table-left-align">@shift.EndTime.ToString("HH:mm")</td>
+                                <td>
+                                    <a asp-action="EditShift" asp-route-shiftId="@shift.Id" class="btn btn-primary">Edytuj zmiane</a>
+                                    <a asp-action="DeleteShift" asp-route-shiftId="@shift.Id" class="btn btn-danger">Usuń zmiane</a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
                 </td>
+                <td>
+                    <a asp-action="AddShift" asp-route-employeeId="@employee.Id" class="btn btn-success">Dodaj zmiane</a>
+                </td>
+
             </tr>
         }
     </tbody>

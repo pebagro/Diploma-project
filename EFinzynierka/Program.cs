@@ -4,23 +4,37 @@ using EFinzynierka.Services;
 using EFinzynierka.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using EFinzynierka.Controllers;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+
 
 internal class Program
 {
+
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddControllersWithViews();
+        var provider = builder.Services.BuildServiceProvider();
+        var configuration = provider.GetRequiredService<IConfiguration>();
+        builder.Services.AddLogging();
+        builder.Services.AddSingleton(configuration.GetValue<string>("RFIDReader:PortName"));
         builder.Services.AddScoped<IEmployeeservices, Employeeservices>();
+        builder.Services.AddScoped<IEmployeeDataService, EmployeeDataService>();
         builder.Services.AddTransient<ISchedulerservices, Schedulerservices>();
         builder.Services.AddAuthorization();
         builder.Services.AddAuthentication();
-
+        builder.Services.AddMvc();
+        
+        
         builder.Services.AddDbContext<DbEFinzynierkaContext>(builder =>
         {
-
             builder.UseSqlServer(@"Data Source=DESKTOP-BFG7ULK\MSSQLSERVER01;Initial Catalog=DbEFinzynierka;Integrated Security=True;Encrypt=false;TrustServerCertificate=true");
         });
+        builder.Services.AddHostedService<RFIDReaderService>();
         builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
         {
             options.Password.RequireNonAlphanumeric = false;
@@ -41,20 +55,17 @@ internal class Program
             app.UseHsts();
         }
         app.UseStaticFiles();
-
         app.UseHttpsRedirection();
-        
-        
-
         app.UseRouting();
+        
         app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-        
+            pattern: "{controller=Account}/{action=Login}/{id?}");
+
         app.Run();
-        
+
     }
 }

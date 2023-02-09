@@ -5,11 +5,12 @@ using System.Reflection.Emit;
 using System.Linq;
 using System;
 using System.Reflection.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EFinzynierka
 {
     public class DbEFinzynierkaContext : IdentityDbContext<UserModel>
-    { 
+    {
         // konstruktor
         public DbEFinzynierkaContext(DbContextOptions<DbEFinzynierkaContext> options) : base(options) { }
 
@@ -17,17 +18,30 @@ namespace EFinzynierka
         public DbSet<EmployeeModel> Employees { get; set; }
         public DbSet<SchedulerModel> Scheduler { get; set; }
         public DbSet<MonthlyModel> MonthlyModel { get; set; }
+        public DbSet<Shift> Shifts { get; set; }
+        public DbSet<RFIDLog> RFIDLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.Entity<MonthlyModel>().ToTable("MonthlyModel");
-         
+
             builder.Entity<EmployeeModel>().ToTable("Employee");
-           
+
             builder.Entity<SchedulerModel>().ToTable("Scheduler");
-            
+
+            builder.Entity<Shift>().ToTable("Shift");
+
+            builder.Entity<RFIDLog>().ToTable("RFIDLog");
+
+            builder.Entity<Shift>()
+              .HasOne(s => s.Employee)
+              .WithMany(e => e.Shifts)
+              .HasForeignKey(s => s.EmployeeId);
+
         }
     }
+
+
 }

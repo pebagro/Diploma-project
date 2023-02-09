@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EFinzynierka.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUser : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,30 +54,18 @@ namespace EFinzynierka.Migrations
                 name: "Employee",
                 columns: table => new
                 {
-                    IdEmployee = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Contract = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Telephone = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Contract = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telephone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employee", x => x.IdEmployee);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Scheduler",
-                columns: table => new
-                {
-                    IdScheduler = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DaysInMonth = table.Column<int>(type: "int", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Scheduler", x => x.IdScheduler);
+                    table.PrimaryKey("PK_Employee", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -187,32 +175,50 @@ namespace EFinzynierka.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MonthlyModel",
+                name: "Scheduler",
                 columns: table => new
                 {
-                    TypeId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Day = table.Column<int>(type: "int", nullable: false),
-                    HoursScheduled = table.Column<int>(type: "int", nullable: false),
-                    ShiftType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DaysInMonth = table.Column<int>(type: "int", nullable: false),
                     Month = table.Column<int>(type: "int", nullable: false),
-                    DayInMonth = table.Column<int>(type: "int", nullable: false),
-                    EmployeeModelIdEmployee = table.Column<int>(type: "int", nullable: true),
-                    MonthlyModelTypeId = table.Column<int>(type: "int", nullable: true)
+                    Monthname = table.Column<string>(name: "Month_name", type: "nvarchar(max)", nullable: false),
+                    EmployeeModelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MonthlyModel", x => x.TypeId);
+                    table.PrimaryKey("PK_Scheduler", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MonthlyModel_Employee_EmployeeModelIdEmployee",
-                        column: x => x.EmployeeModelIdEmployee,
+                        name: "FK_Scheduler_Employee_EmployeeModelId",
+                        column: x => x.EmployeeModelId,
                         principalTable: "Employee",
-                        principalColumn: "IdEmployee");
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MonthlyModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Day = table.Column<int>(type: "int", nullable: false),
+                    HoursScheduled = table.Column<int>(type: "int", nullable: false),
+                    EmployeeModelId = table.Column<int>(type: "int", nullable: true),
+                    SchedulerModelId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonthlyModel", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MonthlyModel_MonthlyModel_MonthlyModelTypeId",
-                        column: x => x.MonthlyModelTypeId,
-                        principalTable: "MonthlyModel",
-                        principalColumn: "TypeId");
+                        name: "FK_MonthlyModel_Employee_EmployeeModelId",
+                        column: x => x.EmployeeModelId,
+                        principalTable: "Employee",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MonthlyModel_Scheduler_SchedulerModelId",
+                        column: x => x.SchedulerModelId,
+                        principalTable: "Scheduler",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -255,14 +261,19 @@ namespace EFinzynierka.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MonthlyModel_EmployeeModelIdEmployee",
+                name: "IX_MonthlyModel_EmployeeModelId",
                 table: "MonthlyModel",
-                column: "EmployeeModelIdEmployee");
+                column: "EmployeeModelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MonthlyModel_MonthlyModelTypeId",
+                name: "IX_MonthlyModel_SchedulerModelId",
                 table: "MonthlyModel",
-                column: "MonthlyModelTypeId");
+                column: "SchedulerModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Scheduler_EmployeeModelId",
+                table: "Scheduler",
+                column: "EmployeeModelId");
         }
 
         /// <inheritdoc />
@@ -287,13 +298,13 @@ namespace EFinzynierka.Migrations
                 name: "MonthlyModel");
 
             migrationBuilder.DropTable(
-                name: "Scheduler");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Scheduler");
 
             migrationBuilder.DropTable(
                 name: "Employee");

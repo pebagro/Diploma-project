@@ -4,6 +4,7 @@ using EFinzynierka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFinzynierka.Migrations
 {
     [DbContext(typeof(DbEFinzynierkaContext))]
-    partial class DbEFinzynierkaContextModelSnapshot : ModelSnapshot
+    [Migration("20221211000608_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,13 +32,6 @@ namespace EFinzynierka.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthLevel")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CardInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Contract")
                         .IsRequired()
@@ -75,15 +71,20 @@ namespace EFinzynierka.Migrations
                     b.Property<int>("Day")
                         .HasColumnType("int");
 
+                    b.Property<int?>("EmployeeModelId")
+                        .HasColumnType("int");
+
                     b.Property<int>("HoursScheduled")
                         .HasColumnType("int");
 
-                    b.Property<int>("SchedulesId")
+                    b.Property<int?>("SchedulerModelId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SchedulesId");
+                    b.HasIndex("EmployeeModelId");
+
+                    b.HasIndex("SchedulerModelId");
 
                     b.ToTable("MonthlyModel", (string)null);
                 });
@@ -99,7 +100,7 @@ namespace EFinzynierka.Migrations
                     b.Property<int>("DaysInMonth")
                         .HasColumnType("int");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeModelId")
                         .HasColumnType("int");
 
                     b.Property<int>("Month")
@@ -109,12 +110,9 @@ namespace EFinzynierka.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MonthlyId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("EmployeeModelId");
 
                     b.ToTable("Scheduler", (string)null);
                 });
@@ -317,82 +315,22 @@ namespace EFinzynierka.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RFIDLog", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("EmployeeID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsEntry")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RFIDCardID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("EmployeeID")
-                        .IsUnique();
-
-                    b.ToTable("RFIDLog", (string)null);
-                });
-
-            modelBuilder.Entity("Shift", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeModelId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeModelId");
-
-                    b.ToTable("Shift", (string)null);
-                });
-
             modelBuilder.Entity("EFinzynierka.Models.MonthlyModel", b =>
                 {
-                    b.HasOne("EFinzynierka.Models.SchedulerModel", "Schedules")
+                    b.HasOne("EFinzynierka.Models.EmployeeModel", null)
                         .WithMany("MonthlyModels")
-                        .HasForeignKey("SchedulesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmployeeModelId");
 
-                    b.Navigation("Schedules");
+                    b.HasOne("EFinzynierka.Models.SchedulerModel", null)
+                        .WithMany("MonthlyModels")
+                        .HasForeignKey("SchedulerModelId");
                 });
 
             modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>
                 {
-                    b.HasOne("EFinzynierka.Models.EmployeeModel", "Employee")
+                    b.HasOne("EFinzynierka.Models.EmployeeModel", null)
                         .WithMany("Schedules")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
+                        .HasForeignKey("EmployeeModelId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -446,36 +384,11 @@ namespace EFinzynierka.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RFIDLog", b =>
-                {
-                    b.HasOne("EFinzynierka.Models.EmployeeModel", "Employee")
-                        .WithOne("RFIDLog")
-                        .HasForeignKey("RFIDLog", "EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("Shift", b =>
-                {
-                    b.HasOne("EFinzynierka.Models.EmployeeModel", "EmployeeModel")
-                        .WithMany("Shifts")
-                        .HasForeignKey("EmployeeModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("EmployeeModel");
-                });
-
             modelBuilder.Entity("EFinzynierka.Models.EmployeeModel", b =>
                 {
-                    b.Navigation("RFIDLog")
-                        .IsRequired();
+                    b.Navigation("MonthlyModels");
 
                     b.Navigation("Schedules");
-
-                    b.Navigation("Shifts");
                 });
 
             modelBuilder.Entity("EFinzynierka.Models.SchedulerModel", b =>

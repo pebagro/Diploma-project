@@ -4,6 +4,7 @@ using EFinzynierka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFinzynierka.Migrations
 {
     [DbContext(typeof(DbEFinzynierkaContext))]
-    partial class DbEFinzynierkaContextModelSnapshot : ModelSnapshot
+    [Migration("20221230133351_rfid")]
+    partial class rfid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,13 +32,6 @@ namespace EFinzynierka.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthLevel")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CardInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Contract")
                         .IsRequired()
@@ -340,8 +336,7 @@ namespace EFinzynierka.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("EmployeeID")
-                        .IsUnique();
+                    b.HasIndex("EmployeeID");
 
                     b.ToTable("RFIDLog", (string)null);
                 });
@@ -449,8 +444,8 @@ namespace EFinzynierka.Migrations
             modelBuilder.Entity("RFIDLog", b =>
                 {
                     b.HasOne("EFinzynierka.Models.EmployeeModel", "Employee")
-                        .WithOne("RFIDLog")
-                        .HasForeignKey("RFIDLog", "EmployeeID")
+                        .WithMany("RFIDLogs")
+                        .HasForeignKey("EmployeeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -470,8 +465,7 @@ namespace EFinzynierka.Migrations
 
             modelBuilder.Entity("EFinzynierka.Models.EmployeeModel", b =>
                 {
-                    b.Navigation("RFIDLog")
-                        .IsRequired();
+                    b.Navigation("RFIDLogs");
 
                     b.Navigation("Schedules");
 

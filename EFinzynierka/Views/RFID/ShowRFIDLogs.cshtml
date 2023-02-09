@@ -1,0 +1,39 @@
+﻿@model EFinzynierka.Models.RFIDLogsViewModel
+
+@{
+    ViewData["Title"] = "Show RFID Logs";
+}
+
+<h1>Logi RFID dla pracownika @Model.Employee.Name @Model.Employee.Surname</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID log</th>
+            <th>Nr karty</th>
+            <th>Czas odbicia</th>
+            <th>Wejscie</th>
+            <th>Zaplanowane</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model.Logs)
+        {
+            <tr>
+                <td>@log.ID</td>
+                <td>@log.RFIDCardID</td>
+                <td>@log.Timestamp</td>
+                <td>
+                @if (log.IsEntry)
+                {
+                    <text>Wejscie</text>
+                }
+                else
+                {
+                    <text>Wyjscie</text>
+                    }</td>
+                <td>@ViewData["hasShift"]</td>
+            </tr>
+        }
+    </tbody>
+</table>

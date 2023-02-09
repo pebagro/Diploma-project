@@ -16,27 +16,66 @@ namespace EFinzynierka.Services
             _context = context;
         }
 
+        public int Add(MonthlyModel monthlyModel)
+        {
+
+            _context.MonthlyModel.Add(monthlyModel);
+            _context.SaveChanges();
+
+            return monthlyModel.Id;
+        }
+
+        public int AddScheduler(SchedulerModel schedulerModel)
+        {
+
+            _context.Scheduler.Add(schedulerModel);
+            _context.SaveChanges();
+
+            return schedulerModel.Id;
+        }
+
         public void GetUser(int id)
         {
+
             var user_id = _context.Employees.Find(id);
             //poprawic
 
         }
 
-        public int LoadMonth(string MonthNameStr)
+        public SchedulerModel LoadMonth(int id,int month)
         {
+   
+            SchedulerModel schedulerModel = new SchedulerModel();
+            int dTyear = DateTime.Now.Year;
+            int daysinmonth  = DateTime.DaysInMonth(dTyear, month+1);
+            int month_choosed = month;
 
-            int month = DateTimeFormatInfo.CurrentInfo.MonthNames.ToList().IndexOf(MonthNameStr) + 1;
-            return month;
+            schedulerModel.Month = month;
+            schedulerModel.DaysInMonth = daysinmonth;
+                
+
+            
+            
+            // +1 w month z powodu tego iż funkcja DateTime ma 13 miesięcy - blank month 
+            // o wartości NULL
+
+            return schedulerModel;
         }
 
-        public int PickMonth()
+        public SchedulerModel PickMonth()
         {
             int dTyear = DateTime.Now.Year;
             int dMonth = DateTime.Now.Month;
             int DayInMonth = DateTime.DaysInMonth(dTyear, dMonth);
-            return DayInMonth;
+            SchedulerModel schedulerModel = new SchedulerModel();
+            schedulerModel.DaysInMonth = DayInMonth;
+            CultureInfo ci = new CultureInfo("pl-PL");
+            schedulerModel.Month_name = DateTime.Now.ToString("MMMM", ci).ToUpperInvariant();
+            return schedulerModel;
         }
+
+       
+
 
         public List<ISchedulerservices> schedulerservices(List<MonthlyModel> monthlyModels)
         {
@@ -45,8 +84,8 @@ namespace EFinzynierka.Services
             {
                 var model = new MonthlyModel();
                 {
-                    model.IdMonthly = item.IdMonthly;
-                    model.DayInMonth = item.DayInMonth;
+                    model.Id = item.Id;
+                //    model.DayInMonth = item.DayInMonth;
                     model.HoursScheduled = item.HoursScheduled;
                 }
                 schedulerservices.Add(model);
@@ -85,12 +124,31 @@ namespace EFinzynierka.Services
             throw new NotImplementedException();
         }
 
-        public int Add(MonthlyModel monthlyModel)
-        {
-            _context.MonthlyModel.Add(monthlyModel);
-            _context.SaveChanges();
 
-            return monthlyModel.IdMonthly;
+        public void Others(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Otherss(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SchedulerModel Gets(int id)
+        {
+            var cokolwiek = _context.Scheduler.Find(id);
+            return cokolwiek;
+        }
+
+        public SchedulerModel tester(int id, int int_month)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetScheduledHours(int id, int month, int year)
+        {
+            throw new NotImplementedException();
         }
     }
 }

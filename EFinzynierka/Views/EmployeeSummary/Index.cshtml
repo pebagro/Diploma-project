@@ -1,0 +1,50 @@
+﻿@model EmployeeSummaryViewModel
+
+@{
+    ViewData["Title"] = "Raport pracowniczy";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<br />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <form asp-action="GetEmployeeSummary">
+                <div class="form-group">
+                    <select class="form-control" asp-for="SelectedEmployeeId" asp-items="Model.EmployeesSelectList" name="SelectedEmployeeId">
+                        <option value="">Wybierz pracownika</option>
+                    </select>
+                    <input type="submit" class="btn btn-primary" value="Wybierz" asp-for="SelectedEmployeeId" asp-action="GetEmployeeSummary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nazwa pracownika</th>
+                    <th>Rodzaj umowy</th>
+                    <th>Godziny w bieżącym miesiącu</th>
+                    <th>Liczba spóźnień</th>
+                    <th>Brak odbicia RFID</th>
+                    <th>Godziny urlopu</th>
+                    <th>Staż pracy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.EmployeeSummary.Name @Model.EmployeeSummary.Surname</td>
+                    <td>Umowa</td>
+                    <td>@Model.EmployeeSummary.WeeklyScheduledHours</td>
+                    <td>@Model.EmployeeSummary.LateArrivals</td>
+                    <td>@Model.EmployeeSummary.NoClockIn</td>
+                    <td>26 dni</td>
+                    <td>@Model.EmployeeSummary.WorkExperienceYears lat @Model.EmployeeSummary.WorkExperienceMonths miesięcy</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

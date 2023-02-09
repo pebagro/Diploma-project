@@ -1,19 +1,11 @@
-﻿@{
+﻿@model int
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Witam @(User.Identity.Name)</h1>
+    <br />
+    <p>Wybierz opcje z górnego menu</a></p>
 </div>
 
-
-
-@if (User.Identity.IsAuthenticated)
-{
-    <p> ZALOGOWANY</p>
-}
-else
-{
-    <p>NIE ZALOGOWANY </p>
-}

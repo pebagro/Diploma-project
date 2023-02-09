@@ -6,9 +6,11 @@ namespace EFinzynierka.Services.Interfaces
     {
         public EmployeeModel Get(int id);
         // List<EmployeeModel> GetAll();
-        public int PickMonth();
+        public SchedulerModel PickMonth();
         public int Add(MonthlyModel monthlyModel);
-        public int LoadMonth(string id);
+        public int AddScheduler(SchedulerModel schedulerModel);
+        public SchedulerModel LoadMonth(int id, int month);
         public List<ISchedulerservices> schedulerservices(List<MonthlyModel> monthlyModels);
+        public SchedulerModel tester(int id, int int_month);
     }
 }
