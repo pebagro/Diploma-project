@@ -3,6 +3,8 @@ using EFinzynierka.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System;
 
 namespace EFinzynierka.Controllers
 {
@@ -129,13 +131,39 @@ namespace EFinzynierka.Controllers
             return View(shift);
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public ActionResult EditShift(Shift shift)
         {
-            _context.Entry(shift).State = EntityState.Modified;
+            _context.Shifts.Update(shift);
             _context.SaveChanges();
+
             return RedirectToAction("Index");
-        }
+*/
+
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public IActionResult EditShift(int shiftId, Shift updatedShift)
+            {
+                if (shiftId != updatedShift.Id)
+                {
+                    return BadRequest();
+                }
+
+                var shift = _context.Shifts.Find(shiftId);
+
+                if (shift == null)
+                {
+                    return NotFound();
+                }
+
+                shift.StartTime = updatedShift.StartTime;
+                shift.EndTime = updatedShift.EndTime;
+
+                _context.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
 
 
         public ActionResult DeleteShift(int shiftId)

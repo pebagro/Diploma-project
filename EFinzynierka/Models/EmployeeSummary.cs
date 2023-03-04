@@ -10,5 +10,7 @@
         public int NoClockIn { get; set; }
         public int WorkExperienceYears { get; set; }
         public int WorkExperienceMonths { get; set; }
+        public int DaysOffLeft { get; set; }
+        public string Contract { get; set; }
     }
 }

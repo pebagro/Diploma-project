@@ -27,21 +27,33 @@
                 <tr>
                     <th>Nazwa pracownika</th>
                     <th>Rodzaj umowy</th>
-                    <th>Godziny w bieżącym miesiącu</th>
+                    <th>Godziny zaplanowane w miesiącu</th>
                     <th>Liczba spóźnień</th>
                     <th>Brak odbicia RFID</th>
-                    <th>Godziny urlopu</th>
+                    <th>Dni urlopu</th>
                     <th>Staż pracy</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>@Model.EmployeeSummary.Name @Model.EmployeeSummary.Surname</td>
-                    <td>Umowa</td>
+                    <td>@Model.EmployeeSummary.Contract</td>
                     <td>@Model.EmployeeSummary.WeeklyScheduledHours</td>
                     <td>@Model.EmployeeSummary.LateArrivals</td>
                     <td>@Model.EmployeeSummary.NoClockIn</td>
-                    <td>26 dni</td>
+                    <td>
+                        @{
+                            if (@Model.EmployeeSummary.DaysOffLeft == -1)
+                            {
+                                <text>Urlop własny</text>
+
+                            }
+                            else
+                            {
+                                @Model.EmployeeSummary.DaysOffLeft
+                            }
+                        }
+                        </td>
                     <td>@Model.EmployeeSummary.WorkExperienceYears lat @Model.EmployeeSummary.WorkExperienceMonths miesięcy</td>
                 </tr>
             </tbody>

@@ -10,6 +10,9 @@ namespace EFinzynierka.Services.Interfaces
         public EmployeeModel Get(int id);
         public List<EmployeeModel> GetAll();
         double GetScheduledHours(int id, int month, int year);
+        Task<EmployeeSummary> GetEmployeeSummaryAsync(int employeeId);
+        Task<(int years, int months)> GetWorkExperienceAsync(int employeeId);
+        Task<int> GetDaysOffLeftAsync(int employeeId);
     }
 }
 

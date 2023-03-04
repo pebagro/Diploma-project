@@ -60,6 +60,7 @@ namespace EFinzynierka.Services
         }
 
 
+        //public EmployeeSummary GetSummary(int employeeId)
         public EmployeeSummary GetSummary(int employeeId)
         {
             if (employeeId == 0)
@@ -71,27 +72,30 @@ namespace EFinzynierka.Services
      .Include(r => r.RFIDLog)
      .Where(e => e.Id == employeeId)
      .FirstOrDefault();
-            //.FirstOrDefault(e => e.Id == employeeId);
-
+            
             var weeklyScheduledHours = GetWeeklyScheduledHours(employeeId);
             var lateArrivals = GetLateArrivalsCount(employeeId);
             var noClockIns = GetNoClockInsCount(employeeId);
             var employeeWorkTime = GetWorkExperience(employeeId);
+            var daysOffLeft = GetDaysOffLeftAsync(employeeId);
+
+
             var employeeSummary = new EmployeeSummary()
             {
                 Id = employeeId,
                 Name = employee.Name,
                 Surname = employee.Surname,
+                Contract = employee.Contract,
                 WeeklyScheduledHours = (int)weeklyScheduledHours,
                 LateArrivals = lateArrivals,
                 NoClockIn = noClockIns,
                 WorkExperienceYears = employeeWorkTime.WorkExperienceYears,
-                WorkExperienceMonths = employeeWorkTime.WorkExperienceMonths
+                WorkExperienceMonths = employeeWorkTime.WorkExperienceMonths,
+                DaysOffLeft = daysOffLeft
             };
 
             return employeeSummary;
         }
-
 
         public double GetWeeklyHours(int employeeId, DateTime startDate, DateTime endDate)
         {
@@ -131,7 +135,7 @@ namespace EFinzynierka.Services
             return (years, months);
         }
 
-        public int CalculateVacationDays(int employeeId)
+        /*public int CalculateVacationDays(int employeeId)
         {
             var employee = GetEmployeeData(employeeId);
 
@@ -164,7 +168,7 @@ namespace EFinzynierka.Services
             }
 
             return vacationDays;
-        }
+        }*/
 
         private int CalculateWorkExperience(EmployeeModel employee)
         {
@@ -174,5 +178,39 @@ namespace EFinzynierka.Services
             return workExperience;
         }
 
-    }
+        public int GetDaysOffLeftAsync(int employeeId)
+        {
+            var employee = _context.Employees.FindAsync(employeeId);
+            if (employee == null)
+            {
+                throw new ArgumentException($"Employee with ID {employeeId} not found");
+            }
+
+            if (employee.Result.Contract == "UoP")
+            {
+                var currentYear = DateTime.Now.Year;
+                var contractStartDate = employee.Result.StartDate;
+                var daysWorked = (DateTime.Now - contractStartDate).TotalDays;
+                var monthsWorked = (int)Math.Floor(daysWorked / 30.44); // średnia liczba dni w miesiącu
+                var daysInYear = (DateTime.IsLeapYear(currentYear) ? 366 : 365);
+                var daysOffPerYear = 20;
+                var daysOffPerMonth = (int)Math.Floor(daysOffPerYear / 12.0);
+
+                if (monthsWorked < 12)
+                {
+                    var daysOffLeft = (int)(monthsWorked * daysOffPerMonth);
+                    return daysOffLeft;
+                }
+                else
+                {
+                    return daysOffPerYear;
+                }
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        }
 }

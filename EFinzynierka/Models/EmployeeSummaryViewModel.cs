@@ -12,6 +12,7 @@ namespace EFinzynierka.Models
         public int WeeklyScheduledHours { get; set; }
         public int NoClockIn { get; set; }
         public IEnumerable<SelectListItem> EmployeesSelectList { get; set; }
-    
+        public int VacationDays { get; set; }
+        
     }
 }

@@ -11,21 +11,30 @@ namespace EFinzynierka.Controllers
     {
         private readonly IEmployeeDataService _employeeDataService;
 
-        public EmployeeSummary(IEmployeeDataService EmployeeDataService)
+        private readonly IEmployeeservices
+            _employeeServices;
+
+        public EmployeeSummary(IEmployeeDataService EmployeeDataService, IEmployeeservices Employeeservices)
         {
+            
             _employeeDataService = EmployeeDataService;
+            _employeeServices = Employeeservices;
         }
 
-        public IActionResult GetEmployeeSummary(int SelectedEmployeeId)
+        public async Task<IActionResult> GetEmployeeSummary(int SelectedEmployeeId)
         {
             var employee = _employeeDataService.GetSummary(SelectedEmployeeId);
             var employeesSelectList = ConvertEmployeesToSelectList(_employeeDataService.GetAllEmployeeData());
+            var vacationDays = await _employeeServices.GetDaysOffLeftAsync(SelectedEmployeeId);
+            
+            
 
             var viewModel = new EmployeeSummaryViewModel()
             {
                 SelectedEmployeeId = SelectedEmployeeId,
                 EmployeeSummary = employee,
                 EmployeesSelectList = employeesSelectList,
+                VacationDays = vacationDays,
             };
 
             return View("Index", viewModel);
