@@ -12,14 +12,16 @@
 </head>
 <body>
     <header>
+        @*Header*@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-            <a class="navbar-brand" href="#"> ECP</a>
+            
+            <a class="navbar-brand"> ECP</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav">
+                    @*Sprawdzenie czy użytkownik jest zalogowany - jeśli tak to aplikacja udostępni wszystkie moduły, jeżeli nie to użytkownik zostanie poproszony o zalogowanie*@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
@@ -27,8 +29,7 @@
                                 Zalogowany jako: @User.Identity.Name
                             </a>
                         </li>
-
-                        
+     
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="RFID" asp-action="ChooseEmployee">Logi RFID</a>
                         </li>
@@ -47,22 +48,8 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Index">Lista pracownikow</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Create">Dodaj pracownikow</a>
-                 
-
                             </div>
                         </li>
-
-                      @*  <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Firma WIP
-                            </a>
-
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Wyswietl informacje o firmie</a>
-                                <a class="dropdown-item" href="#">Edytuj informacje</a>
-                            </div>
-                        </li>*@
-
 
                         <li class="nav-item active">
                             <a class="nav-link" asp-area="" asp-controller="Account" asp-action="SignOut">Wyloguj sie</a>
@@ -84,17 +71,20 @@
 
         </nav>
     </header>
+    @*Ciało główne - kontener w których renderują się poszczególne moduły*@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
+    @*Stopka*@
     <footer class="border-top footer text-muted">
         <div class="container">
-           <a> &copy; 2022 - Praca inzynierska Pawel Bagrowski </a>
+           <a> &copy; 2023 - Praca inzynierska Pawel Bagrowski </a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 

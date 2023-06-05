@@ -10,7 +10,6 @@ namespace EFinzynierka.Models
         
         public string Surname { get; set; }
         public string PhoneNumber { get; set; }
-        [AllowNull]
         public string UserName { get; set; }
         [NotMapped]
         public DateOnly Birthday { get; set; }

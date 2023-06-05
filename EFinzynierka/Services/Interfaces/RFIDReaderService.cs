@@ -86,13 +86,32 @@ namespace EFinzynierka.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Czekaj na odczytanie karty RFID
-                string data = _serialPort.ReadLine();
-                _logger.LogInformation($"Received data from RFID reader: {data}");
+
+                    string data = "";
+                    char prevChar = '\0';
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        byte[] buffer = new byte[1];
+                        int bytesRead = await _serialPort.BaseStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                        if (bytesRead == 0)
+                        {
+                            break;
+                        }
+
+                        char currentChar = (char)buffer[0];
+                        if (currentChar == '\n' && prevChar == '\r')
+                        {
+                            break;
+                        }
+
+                        data += currentChar;
+                        prevChar = currentChar;
+                    }
+                    _logger.LogInformation($"Received data from RFID reader: {data}");
 
 
                 // Parse the data to extract the RFID card ID
-                int prefixLength = "RFID Tag UID: ".Length;
+                int prefixLength = "UID taga :".Length;
                 string cardId = data.Substring(prefixLength).Trim();
                 cardId = cardId.Replace(" ", "");
                 // Zapisz odczyt karty do bazy danych

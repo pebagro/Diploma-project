@@ -9,6 +9,7 @@ using System.IO.Ports;
 using System.Threading.Tasks;
 using System.Text;
 using System.Data;
+using Microsoft.DotNet.Scaffolding.Shared.CodeModifier.CodeChange;
 
 namespace EFinzynierka.Controllers
 {
@@ -34,7 +35,7 @@ namespace EFinzynierka.Controllers
         public ActionResult ReadFromReader()
         {
             // Otwórz port szeregowy
-            using (var serialPort = new SerialPort("COM6", 9600))
+            using (var serialPort = new SerialPort("COM4", 9600))
             {
 
                 serialPort.Open();
@@ -45,16 +46,16 @@ namespace EFinzynierka.Controllers
                 serialPort.Close();
                 Console.WriteLine("Port zamkniety" + "\n");
                 // Parse the data to extract the RFID card ID
-                int prefixLength = "RFID Tag UID: ".Length;
+                int prefixLength = "UID taga :".Length;
                 string cardId = data.Substring(prefixLength).Trim();
 
                 // Zwróć identyfikator karty RFID
                 Console.WriteLine(cardId);
                 cardId = cardId.Replace(" ", "");
 
-                // Zwróć identyfikator karty RFID
-                return Json(new { CardNumber = cardId });
-
+                // Przypisz numer karty RFID do właściwości modelu
+                var rfidLog = new RFIDLog { RFIDCardID = cardId };
+                return Json(rfidLog);
             }
         }
 
@@ -63,17 +64,11 @@ namespace EFinzynierka.Controllers
         {
             return View();
         }
-
         [HttpPost]
-        public async Task<IActionResult> LogRFIDCard(RFIDLog log, string cardnumber)
+        public async Task<IActionResult> LogRFIDCard(RFIDLog log, string cardnumber, bool isEntry)
         {
-
-            //var employee = _context.Employees.SingleOrDefault(e => e.RFIDLog.RFIDCardID == cardnumber);
-            var employee = _context.Employees.Where(e => e.RFIDLog.RFIDCardID == cardnumber).FirstOrDefault();
-            if (employee != null)
-            {
-                log.Employee = employee;
-            }
+            // Pobierz pracownika przypisanego do numeru karty RFID
+            var employee = await _context.Employees.SingleOrDefaultAsync(e => e.CardInfo == log.RFIDCardID);
 
             if (employee == null)
             {
@@ -81,37 +76,43 @@ namespace EFinzynierka.Controllers
                 return View();
             }
 
+
+            // Sprawdź, czy pracownik ma dyżur w bieżącym czasie
+            DateTime timestamp = DateTime.UtcNow;
+            bool hasShift = await _context.Shifts.AnyAsync(s => s.EmployeeId == employee.Id && (timestamp >= s.StartTime && timestamp <= s.EndTime) && (timestamp.Date == s.StartTime.Date || timestamp.Date == s.EndTime.Date));
+
+            // Utwórz nowy obiekt RFIDLog i przypisz go do pracownika
+            log.Employee = employee;
             log.EmployeeID = employee.Id;
-            log.RFIDCardID = cardnumber;
-            log.Timestamp = DateTime.UtcNow;
-            log.IsEntry = log.IsEntry;
+            log.RFIDCardID = employee.CardInfo;
+            log.Timestamp = timestamp;
+            log.IsEntry = isEntry;
 
-            ModelState.Remove("Employee");
-            ModelState.Remove("RFIDCardID");
-            if (ModelState.IsValid)
+
+            // Dodanie obiektu log do bazy danych
+            _context.RFIDLogs.Add(log);
+            try
             {
-                // Set the Timestamp and IsEntry properties
-
-                // Add the RFIDLog object to the database
-                _context.RFIDLogs.Add(log);
                 await _context.SaveChangesAsync();
-
-
-
-                bool hasShift = _context.Shifts.Any(s => s.EmployeeId == log.EmployeeID && (log.Timestamp >= s.StartTime && log.Timestamp <= s.EndTime) && (log.Timestamp.Date == s.StartTime.Date || log.Timestamp.Date == s.EndTime.Date));
-                if (hasShift)
-                {
-                    Console.WriteLine("Czas zaplanowany");
-                }
-                else
-                {
-                    Console.WriteLine("Czas niezaplanowany");
-                }
-
-                return RedirectToAction("LogRFIDCard");
+            
+            }
+catch (DbUpdateException ex)
+{
+    // Error handling
+    Console.WriteLine(ex.InnerException.Message);
+    throw;
+}
+            // Pętla która wyrzuca w konsoli informacje czy czas jest zaplanowany - pętla czysto testowa
+            if (hasShift)
+            {
+                Console.WriteLine("Czas zaplanowany");
+            }
+            else
+            {
+                Console.WriteLine("Czas niezaplanowany");
             }
 
-            return View(log);
+            return RedirectToAction("LogRFIDCard");
         }
 
         public IActionResult ViewLogs(int employeeId)

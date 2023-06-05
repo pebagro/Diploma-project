@@ -60,26 +60,30 @@ namespace EFinzynierka.Services
         }
 
 
-        //public EmployeeSummary GetSummary(int employeeId)
         public EmployeeSummary GetSummary(int employeeId)
         {
+            //Pętla startowa - w momencie kiedy pracownik ma Id = 0 to wyświetla pierwszego znalezionego pracownika
             if (employeeId == 0)
             {
                 employeeId = _context.Employees.FirstOrDefault().Id;
             }
+
+            // Wyciągnięcie z bazy danych informacji o pracowniku
             var employee = _context.Employees
-     .Include(s => s.Shifts)
-     .Include(r => r.RFIDLog)
-     .Where(e => e.Id == employeeId)
-     .FirstOrDefault();
-            
+             .Include(s => s.Shifts)
+             .Include(r => r.RFIDLog)
+             .Where(e => e.Id == employeeId)
+             .FirstOrDefault();
+
+
+            //Przypisanie zmiennych do funkcji 
             var weeklyScheduledHours = GetWeeklyScheduledHours(employeeId);
             var lateArrivals = GetLateArrivalsCount(employeeId);
             var noClockIns = GetNoClockInsCount(employeeId);
             var employeeWorkTime = GetWorkExperience(employeeId);
             var daysOffLeft = GetDaysOffLeftAsync(employeeId);
 
-
+            //Przypisanie zmiennych do nowego obiektu typu EmployeeSummary
             var employeeSummary = new EmployeeSummary()
             {
                 Id = employeeId,
@@ -93,7 +97,7 @@ namespace EFinzynierka.Services
                 WorkExperienceMonths = employeeWorkTime.WorkExperienceMonths,
                 DaysOffLeft = daysOffLeft
             };
-
+            //Zwrócenie obiektu z danymi do widoku
             return employeeSummary;
         }
 
@@ -181,9 +185,10 @@ namespace EFinzynierka.Services
         public int GetDaysOffLeftAsync(int employeeId)
         {
             var employee = _context.Employees.FindAsync(employeeId);
+
             if (employee == null)
             {
-                throw new ArgumentException($"Employee with ID {employeeId} not found");
+                throw new ArgumentException($"Pracownik o ID {employeeId} nie znaleziony");
             }
 
             if (employee.Result.Contract == "UoP")
@@ -192,7 +197,7 @@ namespace EFinzynierka.Services
                 var contractStartDate = employee.Result.StartDate;
                 var daysWorked = (DateTime.Now - contractStartDate).TotalDays;
                 var monthsWorked = (int)Math.Floor(daysWorked / 30.44); // średnia liczba dni w miesiącu
-                var daysInYear = (DateTime.IsLeapYear(currentYear) ? 366 : 365);
+                var daysInYear = (DateTime.IsLeapYear(currentYear) ? 366 : 365); // zmienna typu dummy do testów
                 var daysOffPerYear = 20;
                 var daysOffPerMonth = (int)Math.Floor(daysOffPerYear / 12.0);
 
@@ -207,10 +212,12 @@ namespace EFinzynierka.Services
                 }
             }
             else
+            // Przy umowie innej niz UoP metoda zwraca nam -1
+            // co jest informacją dla widoku że jest to inny rodzaj umowy
             {
                 return -1;
             }
         }
 
-        }
+    }
 }

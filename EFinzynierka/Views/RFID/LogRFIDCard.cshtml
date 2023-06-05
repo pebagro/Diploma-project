@@ -5,17 +5,104 @@
 }
 
 <h1>Odczytywanie karty RFID</h1>
-
 <form asp-action="LogRFIDCard">
     <div class="form-group">
-        <button type="button" asp-action="ReadFromReader" class="btn btn-secondary" id="read-from-reader">Naciśnij żeby odczytać kartę</button>
+        <button type="button" class="btn btn-secondary" id="read-from-reader">Naciśnij żeby odczytać kartę</button>
     </div>
     <br />
-    <label type="text" >@ViewData["Info"]</label>
+    <label type="text">@ViewData["Info"]</label>
     <div class="form-group">
-        <label type="text" id="CardNumber" name="CardNumber" value="">Numer karty</label>
+        <label type="text" id="RFIDCardID" name="RFIDCardID" value="">Numer karty</label>
+        <input asp-for="RFIDCardID" class="rfidCardID" name="rfidCardID" id="rfidCardID" value="" />
+        <span asp-validation-for="RFIDCardID" class="text-danger"></span>
+    </div>
 
-        <input asp-for="RFIDCardID" class="cardnumber" name="cardnumber" id="cardnumber" value="" />
+    <div class="form-group">
+        <label asp-for="IsEntry">Rozpoczęcie czy koniec zmiany</label>
+        <div class="form-check">
+            <input asp-for="IsEntry" class="form-check-input" type="radio" value="true" />
+            <label class="form-check-label">Rozpoczęcie</label>
+        </div>
+        <div class="form-check">
+            <input asp-for="IsEntry" class="form-check-input" type="radio" value="false" />
+            <label class="form-check-label">Koniec zmiany</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Zapisz log</button>
+    </div>
+</form>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            console.log("ready");
+
+            $('#read-from-reader').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/RFID/ReadFromReader',
+                    success: function (response) {
+                        console.log(response)
+                        $('#rfidCardID').val(response.rfidCardID);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $('form').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LogRFIDCard", "RFID")',
+                    data: {
+                        RFIDCardID: $('#rfidCardID').val(),
+                        IsEntry: $('input[name="IsEntry"]:checked').val()
+                    },
+                    success: function (data) {
+                        console.log("success");
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error");
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+
+
+
+
+@*
+
+
+@model RFIDLog
+
+@{
+    ViewData["Title"] = "Odczytywanie karty RFID";
+}
+
+<h1>Odczytywanie karty RFID</h1>
+
+<form asp-action="LogRFIDCard" method="post">
+    <div class="form-group">
+        <button type="button" class="btn btn-secondary" id="read-from-reader">Naciśnij żeby odczytać kartę</button>
+    </div>
+    <br />
+    <label type="text">@ViewData["Info"]</label>
+    <div class="form-group">
+        <label for="rfidCardID">Numer karty</label>
+        <input type="text" asp-for="RFIDCardID" class="form-control" id="rfidCardID" name="rfidCardID" value="" />
         <span asp-validation-for="RFIDCardID" class="text-danger"></span>
     </div>
 
@@ -39,21 +126,20 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <script>
-
         $(document).ready(function () {
-            console.log("tyryr");
             $('#read-from-reader').click(function () {
                 $.ajax({
                     type: 'POST',
                     url: '/RFID/ReadFromReader',
                     success: function (response) {
                         console.log(response)
-                        $('#cardnumber').val(response.cardNumber);
-                        console.log(response.CardNumber);
+                        $('#rfidCardID').val(response.rfidCardID);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
                     }
                 });
             });
         });
-
     </script>
-}
+}*@

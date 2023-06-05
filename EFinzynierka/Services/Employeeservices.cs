@@ -16,10 +16,8 @@ namespace EFinzynierka.Services
 
         public int Add(EmployeeModel employee)
         {
-
             _context.Employees.Add(employee);
             _context.SaveChanges();
-
             return employee.Id;
         }
 

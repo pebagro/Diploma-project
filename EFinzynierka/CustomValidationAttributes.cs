@@ -7,7 +7,7 @@ public class StartTimeNotLaterThanEndTimeAttribute : ValidationAttribute
         var shift = (Shift)validationContext.ObjectInstance;
         if (shift.StartTime >= shift.EndTime)
         {
-            return new ValidationResult("The start time must be earlier than the end time.");
+            return new ValidationResult("Zmiana nie może zaczynas się wcześniej niż się kończy.");
         }
 
         return ValidationResult.Success;
